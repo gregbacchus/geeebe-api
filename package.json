@@ -20,6 +20,7 @@
     "@types/node": "^8.10.12",
     "@types/underscore": "^1.8.8",
     "jest": "^22.4.3",
+    "tslint": "^5.10.0",
     "typescript": "^2.8.3"
   },
   "dependencies": {

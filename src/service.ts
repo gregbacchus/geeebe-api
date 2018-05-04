@@ -1,8 +1,10 @@
+import { logger, Statuses } from '@geeebe/common';
+import Validator from 'better-validator';
+import { Koa2Middleware } from 'better-validator/src/middleware/Koa2Middleware';
 import * as Koa from 'koa';
 import { Middleware } from 'koa';
 import 'reflect-metadata';
 import { Api } from './api';
-import { logger, Statuses } from '@geeebe/common';
 
 import Router = require('koa-router');
 import _ = require('underscore');
@@ -30,6 +32,14 @@ export declare interface IServiceOptions {
   useLogger?: boolean; // include koa logger
   disableCache?: boolean;
 }
+
+const WrapperFormatter = Validator.format.response.WrapperFormatter;
+const FailureFormatter = Validator.format.failure.FailureFormatter;
+
+export const validatorMiddleware: Koa2Middleware = Validator.koa2Middleware({
+  failureFormatter: new FailureFormatter({}),
+  responseFormatter: new WrapperFormatter({}),
+});
 
 //noinspection JSUnusedGlobalSymbols
 export abstract class KoaService<TOptions extends IServiceOptions> extends Koa implements IService {
