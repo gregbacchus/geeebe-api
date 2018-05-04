@@ -1,11 +1,11 @@
-import { Statuses } from '@geeebe/common';
+import { logger, Statuses } from '@geeebe/common';
 import { Context } from 'koa';
 import { IRouterContext } from 'koa-router';
 
 import Router = require('koa-router');
 import _ = require('underscore');
 
-const debug = require('debug')('mist:api:base');
+const debug = logger.child('common:api:base');
 
 export abstract class Api extends Router {
 
@@ -25,7 +25,7 @@ export abstract class Api extends Router {
 
     switch (err.name) {
       case 'ValidationError':
-        debug(`${ctx.request.method} ${ctx.request.url}`, err.errors, err);
+        debug(`${ctx.request.method} ${ctx.request.url}`, { errors: err.errors, errorMessage: err.message });
         if (err.errors) {
           data.failures = [];
           _.values(err.errors).forEach((error) => {
