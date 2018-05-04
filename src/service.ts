@@ -24,17 +24,15 @@ export declare interface IService {
   start(): void;
 }
 
-export declare interface IOptions {
+export declare interface IServiceOptions {
   port: number | string; // server port
-  hubUrl: string; // URL of the hub service
-  clientSecret: string; // mist auth secret
   staticPath?: string; // directory from which to serve static files
   useLogger?: boolean; // include koa logger
   disableCache?: boolean;
 }
 
 //noinspection JSUnusedGlobalSymbols
-export abstract class KoaService<TOptions extends IOptions> extends Koa implements IService {
+export abstract class KoaService<TOptions extends IServiceOptions> extends Koa implements IService {
 
   /**
    * Returns error formatting middleware
@@ -58,10 +56,9 @@ export abstract class KoaService<TOptions extends IOptions> extends Koa implemen
 
   /**
    * Create Koa app
-   * @param {Container} container - DI Container
-   * @param {IOptions} options
+   * @param options
    */
-  constructor(options: IOptions) {
+  constructor(options: IServiceOptions) {
     super();
 
     this.options = _.defaults({}, options, DEFAULT_OPTIONS);
