@@ -1,6 +1,6 @@
+import { Statuses } from '@geeebe/common';
 import { Context } from 'koa';
 import { IRouterContext } from 'koa-router';
-import { Statuses } from '@geeebe/common';
 
 import Router = require('koa-router');
 import _ = require('underscore');
