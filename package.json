@@ -1,0 +1,35 @@
+{
+  "name": "@geeebe/api",
+  "version": "1.0.5",
+  "description": "",
+  "private": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "npx jest --coverage",
+    "build": "rm -rf dest && npx tsc --outDir dist --declaration --sourceMap",
+    "prepublishOnly": "npm run build && npm version patch"
+  },
+  "author": "Greg Bacchus",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^22.2.3",
+    "@types/koa": "^2.0.45",
+    "@types/koa-router": "^7.0.28",
+    "@types/mongoose": "^5.0.11",
+    "@types/node": "^8.10.12",
+    "@types/underscore": "^1.8.8",
+    "jest": "^22.4.3",
+    "typescript": "^2.8.3"
+  },
+  "dependencies": {
+    "@geeebe/common": "^1.0.5",
+    "@types/uuid": "^3.4.3",
+    "better-validator": "^2.1.7",
+    "koa": "^2.5.1",
+    "koa-router": "^7.4.0",
+    "mongoose": "^5.0.17",
+    "underscore": "^1.9.0",
+    "uuid": "^3.2.1"
+  }
+}
