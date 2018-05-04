@@ -5,7 +5,7 @@ import { IRouterContext } from 'koa-router';
 import Router = require('koa-router');
 import _ = require('underscore');
 
-const debug = logger.child('common:api:base');
+const debug = logger.child({ module: 'common:api:base' });
 
 export abstract class Api extends Router {
 
