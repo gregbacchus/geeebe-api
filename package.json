@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@geeebe/common": "^1.0.6",
-    "@geeebe/data": "^1.0.1",
+    "@geeebe/data": "^1.0.2",
     "@types/uuid": "^3.4.3",
     "better-validator": "^2.1.7",
     "koa": "^2.5.1",
