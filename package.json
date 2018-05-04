@@ -23,12 +23,18 @@
     "typescript": "^2.8.3"
   },
   "dependencies": {
-    "@geeebe/common": "^1.0.5",
+    "@geeebe/common": "^1.0.6",
     "@geeebe/data": "^1.0.1",
     "@types/uuid": "^3.4.3",
     "better-validator": "^2.1.7",
     "koa": "^2.5.1",
+    "koa-bodyparser": "^4.2.0",
+    "koa-compress": "^3.0.0",
+    "koa-conditional-get": "^2.0.0",
+    "koa-etag": "^3.0.0",
+    "koa-logger": "^3.2.0",
     "koa-router": "^7.4.0",
+    "koa-static": "^4.0.2",
     "mongoose": "^5.0.17",
     "underscore": "^1.9.0",
     "uuid": "^3.2.1"
