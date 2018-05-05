@@ -1,4 +1,5 @@
-import { logger, Statuses } from '@geeebe/common';
+import { Statuses } from '@geeebe/common';
+import { logger } from '@geeebe/logging';
 import { Context } from 'koa';
 import { IRouterContext } from 'koa-router';
 

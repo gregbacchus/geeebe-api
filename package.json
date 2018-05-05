@@ -27,6 +27,7 @@
   "dependencies": {
     "@geeebe/common": "^1.0.17",
     "@geeebe/data": "^1.0.2",
+    "@geeebe/logging": "^1.0.2",
     "better-validator": "^2.1.7",
     "koa": "^2.5.1",
     "koa-router": "^7.4.0",
