@@ -7,7 +7,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "test": "npx jest --coverage",
-    "build": "rm -rf dist && npx tsc --outDir dist --declaration --sourceMap",
+    "build": "rm -rf dist && npx tsc --outDir dist --sourceMap",
     "prepublishOnly": "npm run build && npm version patch"
   },
   "author": "Greg Bacchus",
@@ -25,9 +25,9 @@
     "typescript": "^2.8.3"
   },
   "dependencies": {
-    "@geeebe/common": "^1.0.17",
+    "@geeebe/common": "^1.0.20",
     "@geeebe/data": "^1.0.2",
-    "@geeebe/logging": "^1.0.2",
+    "@geeebe/logging": "^1.0.4",
     "better-validator": "^2.1.7",
     "koa": "^2.5.1",
     "koa-router": "^7.4.0",
