@@ -15,7 +15,9 @@ const ONE_CHAR = 1;
 export declare interface IReadableApi {
 
   // assertAccess(required?: string): IMiddleware;
+  checkReadOneParams(params: StringChildValidator): void;
   checkReadOneQuery(query: StringChildValidator): void;
+  checkReadManyParams(params: StringChildValidator): void;
   checkReadManyQuery(query: StringChildValidator): void;
   makeProjection(ctx: IRouterContext): Projection;
   makeReadOneQuery(ctx: IRouterContext, defaultAnd?: Query[]): Promise<Query>;
@@ -36,12 +38,12 @@ export namespace Readable {
 
   export async function setRoutes(router: Router, api: IReadableApi, check: Koa2Middleware) {
     router.get('/:id', /* api.assertAccess(), */
-      check.params(Shared.checkAccessOneParams),
+      check.params(api.checkReadOneParams.bind(api)),
       check.query(api.checkReadOneQuery.bind(api)),
       api.readOne.bind(api));
 
     router.get('/', /* api.assertAccess(), */
-      check.params(Shared.checkAccessManyParams),
+      check.params(api.checkReadManyParams.bind(api)),
       check.query(api.checkReadManyQuery.bind(api)),
       api.readMany.bind(api));
   }

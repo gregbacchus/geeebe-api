@@ -6,6 +6,7 @@ import { Document, Model } from 'mongoose';
 import { Api } from './api';
 import { Deletable, IDeletableApi } from './parts/deletable';
 import { IReadableApi, Readable } from './parts/readable';
+import { Shared } from './parts/shared';
 import { IWritableApi, Writable } from './parts/writable';
 
 import Router = require('koa-router');
@@ -53,8 +54,18 @@ export class DataApi<TEntity extends Document>
   }
 
   //noinspection JSMethodCanBeStatic
+  public checkReadOneParams(params: StringChildValidator) {
+    Shared.checkAccessOneParams(params);
+  }
+
+  //noinspection JSMethodCanBeStatic
   public checkReadOneQuery(query: StringChildValidator) {
     Readable.checkReadOneQuery(query);
+  }
+
+  //noinspection JSMethodCanBeStatic
+  public checkReadManyParams(params: StringChildValidator) {
+    Shared.checkAccessOneParams(params);
   }
 
   //noinspection JSMethodCanBeStatic
@@ -67,11 +78,21 @@ export class DataApi<TEntity extends Document>
   }
 
   //noinspection JSUnusedLocalSymbols
+  public checkCreateOneParams(params: StringChildValidator) {
+    Shared.checkAccessOneParams(params);
+  }
+
+  //noinspection JSUnusedLocalSymbols
   public checkCreateOneQuery(_: StringChildValidator) {
   }
 
   //noinspection JSUnusedLocalSymbols
   public checkUpdateOneBody(_: ChildValidator) {
+  }
+
+  //noinspection JSUnusedLocalSymbols
+  public checkUpdateOneParams(params: StringChildValidator) {
+    Shared.checkAccessOneParams(params);
   }
 
   //noinspection JSUnusedLocalSymbols
@@ -84,12 +105,22 @@ export class DataApi<TEntity extends Document>
   }
 
   //noinspection JSUnusedLocalSymbols
+  public checkDeleteOneParams(params: StringChildValidator) {
+    Shared.checkAccessOneParams(params);
+  }
+
+  //noinspection JSUnusedLocalSymbols
   public checkDeleteOneQuery(_: StringChildValidator) {
   }
 
   //noinspection JSMethodCanBeStatic
   public checkRestoreOneBody(body: ChildValidator) {
     body().strict();
+  }
+
+  //noinspection JSUnusedLocalSymbols
+  public checkRestoreOneParams(params: StringChildValidator) {
+    Shared.checkAccessOneParams(params);
   }
 
   //noinspection JSUnusedLocalSymbols

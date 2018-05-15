@@ -12,8 +12,10 @@ export declare interface IWritableApi {
 
   // assertAccess(required?: string): IMiddleware;
   checkCreateOneBody(body: ChildValidator): void;
+  checkCreateOneParams(query: StringChildValidator): void;
   checkCreateOneQuery(query: StringChildValidator): void;
   checkUpdateOneBody(body: ChildValidator): void;
+  checkUpdateOneParams(query: StringChildValidator): void;
   checkUpdateOneQuery(query: StringChildValidator): void;
   makeWriteOneQuery(ctx: IRouterContext, defaultAnd?: Query[]): Promise<Query>;
   createId(ctx: IRouterContext): string;
@@ -29,13 +31,13 @@ export namespace Writable {
 
   export function setRoutes(router: Router, api: IWritableApi, check: Koa2Middleware) {
     router.post('/', /* api.assertAccess('c'), */
-      check.params(Shared.checkAccessManyParams),
+      check.params(api.checkCreateOneParams.bind(api)),
       check.body(api.checkCreateOneBody.bind(api)),
       check.query(api.checkCreateOneQuery.bind(api)),
       api.createOne.bind(api));
 
     router.put('/:id', /* api.assertAccess('u'), */
-      check.params(Shared.checkAccessOneParams),
+      check.params(api.checkUpdateOneParams.bind(api)),
       check.body(api.checkUpdateOneBody.bind(api)),
       check.query(api.checkUpdateOneQuery.bind(api)),
       api.updateOne.bind(api));

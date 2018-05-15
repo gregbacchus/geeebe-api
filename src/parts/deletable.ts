@@ -12,8 +12,10 @@ export declare interface IDeletableApi {
 
   // assertAccess(required?: string): IMiddleware;
   checkDeleteOneBody(body: ChildValidator): void;
+  checkDeleteOneParams(params: StringChildValidator): void;
   checkDeleteOneQuery(query: StringChildValidator): void;
   checkRestoreOneBody(body: ChildValidator): void;
+  checkRestoreOneParams(params: StringChildValidator): void;
   checkRestoreOneQuery(query: StringChildValidator): void;
   makeWriteOneQuery(ctx: IRouterContext, defaultAnd?: Query[]): Promise<Query>;
   onDeleted(id: string): Promise<void>;
@@ -26,13 +28,13 @@ export namespace Deletable {
 
   export function setRoutes(router: Router, api: IDeletableApi, check: Koa2Middleware) {
     router.delete('/:id', /* api.assertAccess('d'), */
-      check.params(Shared.checkAccessOneParams),
+      check.params(api.checkDeleteOneParams.bind(api)),
       check.body(api.checkDeleteOneBody.bind(api)),
       check.query(api.checkDeleteOneQuery.bind(api)),
       api.deleteOne.bind(api));
 
     router.post('/:id', /* api.assertAccess('cd'), */
-      check.params(Shared.checkAccessOneParams),
+      check.params(api.checkRestoreOneParams.bind(api)),
       check.body(api.checkRestoreOneBody.bind(api)),
       check.query(api.checkRestoreOneQuery.bind(api)),
       api.restoreOne.bind(api));
