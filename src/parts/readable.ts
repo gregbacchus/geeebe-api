@@ -4,7 +4,6 @@ import { StringChildValidator } from 'better-validator/src/IsObject';
 import { Koa2Middleware } from 'better-validator/src/middleware/Koa2Middleware';
 import { IRouterContext } from 'koa-router';
 import { Document, Model } from 'mongoose';
-import { Shared } from './shared';
 
 import Router = require('koa-router');
 import underscore = require('underscore');
