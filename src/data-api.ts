@@ -65,7 +65,7 @@ export class DataApi<TEntity extends Document>
 
   //noinspection JSMethodCanBeStatic
   public checkReadManyParams(params: StringChildValidator) {
-    Shared.checkAccessOneParams(params);
+    Shared.checkAccessManyParams(params);
   }
 
   //noinspection JSMethodCanBeStatic
