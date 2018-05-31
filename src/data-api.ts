@@ -78,8 +78,7 @@ export class DataApi<TEntity extends Document>
   }
 
   //noinspection JSUnusedLocalSymbols
-  public checkCreateOneParams(params: StringChildValidator) {
-    Shared.checkAccessOneParams(params);
+  public checkCreateOneParams(_: StringChildValidator) {
   }
 
   //noinspection JSUnusedLocalSymbols
