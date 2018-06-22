@@ -31,23 +31,19 @@ export class DataApi<TEntity extends Document>
 
   /**
    * Create API which implement basic CRUD functionalities by mongoose
-   * @param parent - Parent Route
-   * @param path - Path to mount this API inside the parent router
+   * @param path - Path to mount this API inside the router
    * @param model - Mongoose object to work with data
    */
   constructor(
-    parent: Router,
-    path: string,
     protected readonly model: Model<TEntity>,
     public readonly check: Koa2Middleware,
+    path?: string,
+    options?: Router.IRouterOptions,
   ) {
-    super(parent, path, { skipAddRoute: true });
-
-    this.addRoutes();
-    parent.use(path || '', this.routes(), this.allowedMethods());
+    super(path, options);
   }
 
-  public addRoutes(): void {
+  public mountRoutes(): void {
     Readable.setRoutes(this, this, this.check);
     Writable.setRoutes(this, this, this.check);
     Deletable.setRoutes(this, this, this.check);

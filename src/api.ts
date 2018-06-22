@@ -50,27 +50,22 @@ export abstract class Api extends Router {
     ctx.body = { error: data };
   }
 
-  public auth: any;
-
   /**
    * Create API
+   * @param path - Path to mount this API inside the router
    */
-  constructor(
-    parent: Router,
-    protected readonly path: string,
-    options?: { skipAddRoute: boolean },
-  ) {
-    super();
+  constructor(path?: string, options?: Router.IRouterOptions) {
+    super({ prefix: path, ...options });
+  }
 
-    if (!options || !options.skipAddRoute) {
-      this.addRoutes();
-      parent.use(path || '', this.routes(), this.allowedMethods());
-    }
+  public mount(parent: Router) {
+    this.mountRoutes();
+    parent.use(this.routes(), this.allowedMethods());
   }
 
   /**
    * Override to add the routes for this API
    * @return {void}
    */
-  protected abstract addRoutes(): void;
+  protected abstract mountRoutes(): void;
 }
