@@ -13,6 +13,7 @@ const debug = logger.child({ module: 'common:api:base' });
  *   new ClientScope('/parent/:parentId').mount(
  *     parentRouter,
  *     new ChildApi('/child'),
+ *     new FooApi('/foo'),
  *   );
  */
 export class ApiScope extends Router {
