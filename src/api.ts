@@ -8,6 +8,24 @@ import _ = require('underscore');
 
 const debug = logger.child({ module: 'common:api:base' });
 
+/**
+ * Usage:
+ *   new ClientScope('/parent/:parentId').mount(
+ *     parentRouter,
+ *     new ChildApi('/child'),
+ *   );
+ */
+export class ApiScope extends Router {
+  constructor(path?: string, options?: Router.IRouterOptions) {
+    super({ prefix: path, ...options });
+  }
+
+  public mount(parent: Router, ...children: Api[]) {
+    children.forEach((child) => child.mount(this));
+    parent.use(this.routes(), this.allowedMethods());
+  }
+}
+
 export abstract class Api extends Router {
 
   //noinspection JSUnusedGlobalSymbols
