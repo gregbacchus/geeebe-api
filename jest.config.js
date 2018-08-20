@@ -7,7 +7,8 @@ module.exports = {
     'json',
     'node'
   ],
-  testRegex: '/(test|spec)/.*\\.(test|spec)\\.(tsx?)$',
+  testRegex: '(/(test|spec)/.*|(\\.|/)(test|spec))\\.(tsx?)$',
+  testURL: 'http://localhost',
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   },
