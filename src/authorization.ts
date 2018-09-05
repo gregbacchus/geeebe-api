@@ -4,7 +4,7 @@ import { Context, Middleware } from 'koa';
 
 const debug = logger.child({ module: 'api:authorization' });
 
-export interface IAuthorizationContext extends Context {
+export interface AuthorizationContext extends Context {
   authorization?: any;
 }
 
@@ -20,7 +20,7 @@ export class AuthorizationDecoder {
   }
 
   public middleware(): Middleware {
-    return async (ctx: IAuthorizationContext, next): Promise<void> => {
+    return async (ctx: AuthorizationContext, next): Promise<void> => {
       try {
         // decode token
         const token = this.getToken(ctx.request.headers);
