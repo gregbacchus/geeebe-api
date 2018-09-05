@@ -1,10 +1,8 @@
 import { Statuses } from '@geeebe/common';
 import { logger } from '@geeebe/logging';
-import { Context } from 'koa';
 import { IRouterContext } from 'koa-router';
 
 import Router = require('koa-router');
-import _ = require('underscore');
 
 const debug = logger.child({ module: 'api:base' });
 
@@ -40,17 +38,16 @@ export abstract class Api extends Router {
    * @param {Error} err - error to format
    * @param {object[]} [err.errors] - validation errors
    */
-  public static formatError(ctx: IRouterContext | Context, err: any): void {
+  public static formatError(ctx: IRouterContext, err: any): void {
     const data: any = { type: err.name, message: err.message };
 
     switch (err.name) {
       case 'ValidationError':
         debug(`${ctx.request.method} ${ctx.request.url}`, { errors: err.errors, errorMessage: err.message });
         if (err.errors) {
-          data.failures = [];
-          _.values(err.errors).forEach((error) => {
-            data.failures.push({ message: error.kind, parameter: error.path });
-          });
+          data.failures = err.errors.map(
+            (error: any) => ({ message: error.kind, parameter: error.path }),
+          );
         }
         ctx.status = Statuses.BAD_REQUEST;
         break;
