@@ -2,34 +2,38 @@ import { logger } from '@geeebe/logging';
 import jwt = require('jsonwebtoken');
 import { Context, Middleware } from 'koa';
 
+const TOKEN_EXTRACTER = /^Bearer (.*)$/;
 const debug = logger.child({ module: 'api:authorization' });
 
 export interface AuthorizationContext extends Context {
   authorization?: any;
 }
 
-export class AuthorizationDecoder {
-  private readonly tokenExtracter = /^Bearer (.*)$/;
+export class JwtDecoder {
+  public static getAuthorization(headers: any): any {
+    try {
+      // decode token
+      const token = JwtDecoder.getToken(headers);
+      if (token) {
+        return jwt.decode(token) || undefined;
+      }
+    } catch (err) {
+      debug.error(err);
+    }
+    return undefined;
+  }
 
-  constructor() { }
-
-  public getToken(headers: any): string | undefined {
+  public static getToken(headers: any): string | undefined {
     const authorization = headers.authorization;
-    const matches = this.tokenExtracter.exec(authorization);
+    const matches = TOKEN_EXTRACTER.exec(authorization);
     return matches && matches[1] || undefined;
   }
 
+  constructor() { }
+
   public middleware(): Middleware {
     return async (ctx: AuthorizationContext, next): Promise<void> => {
-      try {
-        // decode token
-        const token = this.getToken(ctx.request.headers);
-        if (token) {
-          ctx.authorization = jwt.decode(token) || undefined;
-        }
-      } catch (err) {
-        debug.error(err);
-      }
+      ctx.authorization = JwtDecoder.getAuthorization(ctx.request.headers);
       await next();
     };
   }
