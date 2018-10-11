@@ -57,7 +57,7 @@ export abstract class Api extends Router {
         ctx.status = err.status || Statuses.UNAUTHORIZED;
         break;
       default:
-        debug(`${ctx.request.method} ${ctx.request.url}`, err);
+        debug(`${ctx.request.method} ${ctx.request.url}`, { error: err });
         ctx.set('Cache-Control', 'max-age=0');
         ctx.set('Pragma', 'no-cache');
         ctx.status = err.status || Statuses.SERVER_ERROR;
