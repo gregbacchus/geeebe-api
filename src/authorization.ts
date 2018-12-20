@@ -2,7 +2,7 @@ import { logger } from '@geeebe/logging';
 import jwt = require('jsonwebtoken');
 import { Context, Middleware } from 'koa';
 
-const TOKEN_EXTRACTER = /^Bearer (.*)$/;
+const TOKEN_EXTRACTOR = /^Bearer (.*)$/;
 const debug = logger.child({ module: 'api:authorization' });
 
 export interface AuthorizationContext extends Context {
@@ -25,7 +25,7 @@ export class JwtDecoder {
 
   public static getToken(headers: any): string | undefined {
     const authorization = headers.authorization;
-    const matches = TOKEN_EXTRACTER.exec(authorization);
+    const matches = TOKEN_EXTRACTOR.exec(authorization);
     return matches && matches[1] || undefined;
   }
 
