@@ -6,24 +6,26 @@
   "main": "./dist/index.js",
   "types": "./src/index.ts",
   "scripts": {
-    "test": "npx jest --coverage",
+    "test": "./node_modules/.bin/jest --coverage",
     "build": "rm -rf dist && npx tsc --outDir dist --sourceMap",
     "prepublishOnly": "npm run lint && npm run build && npm version patch",
-    "lint": "npx tslint --project tslint.json -t verbose",
-    "postpublish": "git push"
+    "lint": "./node_modules/.bin/tslint --config tslint.json -t verbose src/**/*.ts",
+    "postpublish": "git push",
+    "start": "node -r ts-node/register src/index.ts",
+    "watch": "npx nodemon"
   },
   "author": "Greg Bacchus",
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "^23.3.5",
-    "@types/node": "^10.11.7",
-    "jest": "^23.6.0",
-    "nodemon": "^1.18.4",
+    "@types/jest": "^23.3.14",
+    "@types/node": "^10.14.21",
+    "jest": "^25.0.0",
+    "nodemon": "^1.19.3",
     "supertest": "^3.2.0",
-    "ts-jest": "^23.10.4",
+    "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
-    "tslint": "^5.11.0",
-    "typescript": "^3.1.2"
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.4"
   },
   "dependencies": {
     "@geeebe/common": "^1.0.46",
