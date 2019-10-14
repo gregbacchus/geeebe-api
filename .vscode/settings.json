@@ -3,5 +3,8 @@
   "editor.formatOnSave": true,
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  "tslint.autoFixOnSave": true
+  "tslint.autoFixOnSave": true,
+  "cSpell.words": [
+    "geeebe"
+  ]
 }

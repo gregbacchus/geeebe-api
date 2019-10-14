@@ -1,10 +1,12 @@
 import { Statuses } from '@geeebe/common';
-import { logger } from '@geeebe/logging';
-import { IRouterContext } from 'koa-router';
+import { logger, WithLogger } from '@geeebe/logging';
+import { WithSpan } from '@geeebe/service';
 
 import Router = require('koa-router');
 
 const debug = logger.child({ module: 'api:base' });
+
+type ApiContext = Router.RouterContext & WithLogger & WithSpan;
 
 /**
  * Usage:
@@ -38,7 +40,7 @@ export abstract class Api extends Router {
    * @param {Error} err - error to format
    * @param {object[]} [err.errors] - validation errors
    */
-  public static formatError(ctx: IRouterContext, err: any): void {
+  public static formatError(ctx: ApiContext, err: any): void {
     const data: any = { type: err.name, message: err.message };
 
     switch (err.name) {
@@ -84,4 +86,14 @@ export abstract class Api extends Router {
    * @return {void}
    */
   protected abstract mountRoutes(): void;
+}
+
+export abstract class ControllerApi<T> extends Api {
+  protected abstract createController(ctx: ApiContext): T;
+
+  protected withController = (endpoint: (controller: T, ctx: ApiContext) => Promise<void>) =>
+    async (ctx: ApiContext): Promise<void> => {
+      const controller: T = this.createController(ctx);
+      return endpoint(controller, ctx);
+    }
 }
