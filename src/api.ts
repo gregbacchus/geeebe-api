@@ -6,7 +6,7 @@ import Router = require('koa-router');
 
 const debug = logger.child({ module: 'api:base' });
 
-type ApiContext = Router.RouterContext & WithLogger & WithSpan;
+export type ApiContext = Router.RouterContext & WithLogger & WithSpan;
 
 /**
  * Usage:
