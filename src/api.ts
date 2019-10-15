@@ -1,10 +1,7 @@
-import { Statuses } from '@geeebe/common';
-import { logger, WithLogger } from '@geeebe/logging';
+import { WithLogger } from '@geeebe/logging';
 import { WithSpan } from '@geeebe/service';
 
 import Router = require('koa-router');
-
-const debug = logger.child({ module: 'api:base' });
 
 export type ApiContext = Router.RouterContext & WithLogger & WithSpan;
 
@@ -28,46 +25,6 @@ export class ApiScope extends Router {
 }
 
 export abstract class Api extends Router {
-
-  //noinspection JSUnusedGlobalSymbols
-  /**
-   * Formats the given error into the Koa context - Should never throw any exception
-   * @param {object} ctx - koa.js context
-   * @param {string} ctx.request.url - URL of original requires
-   * @param {number} ctx.status - HTTP response status
-   * @param {function} ctx.set - set response header
-   * @param {*} ctx.body - HTTP response body
-   * @param {Error} err - error to format
-   * @param {object[]} [err.errors] - validation errors
-   */
-  public static formatError(ctx: ApiContext, err: any): void {
-    const data: any = { type: err.name, message: err.message };
-
-    switch (err.name) {
-      case 'ValidationError':
-        debug(`${ctx.request.method} ${ctx.request.url}`, { errors: err.errors, errorMessage: err.message });
-        if (err.errors) {
-          data.failures = err.errors.map(
-            (error: any) => ({ message: error.kind, parameter: error.path }),
-          );
-        }
-        ctx.status = Statuses.BAD_REQUEST;
-        break;
-      case 'UnauthorizedError':
-        ctx.set('Cache-Control', 'max-age=0');
-        ctx.set('Pragma', 'no-cache');
-        ctx.status = err.status || Statuses.UNAUTHORIZED;
-        break;
-      default:
-        debug(`${ctx.request.method} ${ctx.request.url}`, { error: err });
-        ctx.set('Cache-Control', 'max-age=0');
-        ctx.set('Pragma', 'no-cache');
-        ctx.status = err.status || Statuses.SERVER_ERROR;
-        break;
-    }
-    ctx.body = { error: data };
-  }
-
   /**
    * Create API
    * @param path - Path to mount this API inside the router
