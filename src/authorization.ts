@@ -1,7 +1,8 @@
 import { Statuses } from '@geeebe/common';
 import { logger } from '@geeebe/logging';
-import jwt = require('jsonwebtoken');
 import { Context, Middleware } from 'koa';
+
+import jwt = require('jsonwebtoken');
 
 const TOKEN_EXTRACTOR = /^Bearer (.*)$/;
 const debug = logger.child({ module: 'api:authorization' });
@@ -26,7 +27,7 @@ export interface AuthorizationFailure {
   status: Statuses;
 }
 
-namespace Jwt {
+export namespace Jwt {
   export function getBearerToken(headers: any): string | undefined {
     const authorization = headers.authorization;
     const matches = TOKEN_EXTRACTOR.exec(authorization);
