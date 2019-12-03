@@ -1,8 +1,10 @@
-import { Statuses } from '@geeebe/common';
-import { logger } from '@geeebe/logging';
+import { Statuses, Time } from '@geeebe/common';
+import { logger, Logger } from '@geeebe/logging';
+import axios from 'axios';
+import { ConsumeKeyInput, JSONWebKeySet, JWKS, JWT } from 'jose';
 import { Context, Middleware } from 'koa';
 
-import jwt = require('jsonwebtoken');
+import LRU = require('lru-cache');
 
 const TOKEN_EXTRACTOR = /^Bearer (.*)$/;
 const debug = logger.child({ module: 'api:authorization' });
@@ -13,8 +15,52 @@ export interface AuthorizationContext extends Context {
 
 export type CheckToken = (authorization: any, ctx: Context) => Promise<boolean>;
 
-export interface VerifyOptions extends jwt.VerifyOptions {
+export interface VerifyOptions {
+  complete: false;
+  ignoreExp?: boolean;
+  ignoreNbf?: boolean;
+  ignoreIat?: boolean;
+  maxTokenAge?: string;
+  subject?: string;
+  issuer?: string;
+  maxAuthAge?: string;
+  jti?: string;
+  clockTolerance?: string;
+  audience?: string | string[];
+  algorithms?: string[];
+  nonce?: string;
+  now?: Date;
+  crit?: string[];
+
   check?: CheckToken;
+  cacheOptions?: LRU.Options<string, Keys>;
+}
+
+export interface JwtHeader {
+  alg: string;
+  typ: 'JWT';
+  kid?: string;
+}
+
+export interface JwtPayload {
+  sub: string;
+  aub: string;
+  iss: string;
+}
+
+interface OpenidConfiguration {
+  jwks_uri: string;
+}
+
+interface Key {
+  /** The unique identifier for the key. */
+  kid: string;
+  /** The matching public key */
+  publicKey: string;
+}
+
+interface Keys {
+  [kid: string]: Key;
 }
 
 export interface AuthorizationSuccess {
@@ -41,7 +87,7 @@ export class JwtDecoder {
       // decode token
       const token = Jwt.getBearerToken(headers);
       if (token) {
-        return jwt.decode(token) || undefined;
+        return JWT.decode(token) || undefined;
       }
     } catch (err) {
       debug.error(err);
@@ -59,19 +105,18 @@ export class JwtDecoder {
   }
 }
 
-export class JwtAuthentication {
+abstract class BaseJwtAuthentication {
   constructor(
-    private readonly secretOrPublicKey: string | Buffer,
-    private readonly verifyOptions?: VerifyOptions,
+    protected readonly verifyOptions?: VerifyOptions,
   ) { }
 
-  public getAuthorization(headers: any): AuthorizationSuccess | AuthorizationFailure {
+  public async getAuthorization(headers: any, logger: Logger): Promise<AuthorizationSuccess | AuthorizationFailure> {
     try {
       // decode token
       const token = Jwt.getBearerToken(headers);
       if (token) {
         return {
-          authorization: jwt.verify(token, this.secretOrPublicKey, this.verifyOptions),
+          authorization: JWT.verify(token, await this.getSecretOrPublicKey(token), this.verifyOptions),
           status: undefined,
         };
       }
@@ -80,7 +125,7 @@ export class JwtAuthentication {
         status: Statuses.UNAUTHORIZED,
       };
     } catch (err) {
-      debug.error(err);
+      logger.error(err);
       switch (err.name) {
         case 'JsonWebTokenError':
           return {
@@ -98,7 +143,7 @@ export class JwtAuthentication {
 
   public middleware(): Middleware {
     return async (ctx: AuthorizationContext, next): Promise<void> => {
-      const { status, authorization } = this.getAuthorization(ctx.request.headers);
+      const { status, authorization } = await this.getAuthorization(ctx.request.headers, ctx.logger || debug);
       if (status) {
         ctx.status = status;
         return;
@@ -110,5 +155,63 @@ export class JwtAuthentication {
       ctx.authorization = authorization;
       await next();
     };
+  }
+
+  protected abstract getSecretOrPublicKey(token: string): Promise<ConsumeKeyInput>;
+}
+
+export class JwtAuthentication extends BaseJwtAuthentication {
+  constructor(
+    private readonly secretOrPublicKey: string | Buffer,
+    verifyOptions?: VerifyOptions,
+  ) {
+    super(verifyOptions);
+  }
+
+  protected async getSecretOrPublicKey(): Promise<ConsumeKeyInput> {
+    return this.secretOrPublicKey;
+  }
+}
+
+export class JwtJwksAuthentication extends BaseJwtAuthentication {
+  private cache: LRU<string, Keys>;
+
+  constructor(
+    verifyOptions?: VerifyOptions,
+  ) {
+    super(verifyOptions);
+    this.cache = new LRU<string, Keys>({
+      max: 500,
+      maxAge: Time.hours(1),
+      ...verifyOptions?.cacheOptions,
+    });
+  }
+
+  protected async getSecretOrPublicKey(token: string): Promise<ConsumeKeyInput> {
+    const { header, payload } = JWT.decode(token, { complete: true }) as { header: JwtHeader, payload: JwtPayload };
+    if (!payload.iss.startsWith('https://') || !header.kid) return null;
+
+    const keys = await this.getKeys(payload.iss);
+
+    const matchedKey = keys.hasOwnProperty(header.kid) ? keys[header.kid] : null;
+    return matchedKey?.publicKey ?? null;
+  }
+
+  private async getKeys(issuer: string): Promise<Keys> {
+    if (this.cache.has(issuer)) return this.cache.get(issuer)!;
+
+    const configUrl = new URL('./.well-known/openid-configuration', issuer).toString();
+    const { data: configuration } = await axios.get<OpenidConfiguration>(configUrl);
+
+    const { data: jwks } = await axios.get<JSONWebKeySet>(configuration.jwks_uri);
+    const keyStore = JWKS.asKeyStore(jwks);
+    const keys = keyStore.all({ kty: 'RSA' })
+      .filter((key) => key.use === 'sig' && key.kid)
+      .map((key): Key => {
+        return { kid: key.kid, publicKey: key.toPEM() };
+      })
+      .reduce((acc, key) => ({ ...acc, [key.kid]: key }), {} as Keys);
+    this.cache.set(issuer, keys);
+    return keys;
   }
 }

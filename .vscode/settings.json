@@ -5,6 +5,8 @@
   "files.insertFinalNewline": true,
   "tslint.autoFixOnSave": true,
   "cSpell.words": [
-    "geeebe"
+    "JWKS",
+    "geeebe",
+    "openid"
   ]
 }

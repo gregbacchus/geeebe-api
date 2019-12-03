@@ -31,11 +31,13 @@
     "@geeebe/common": "^1.0.62",
     "@geeebe/logging": "^1.0.19",
     "@geeebe/service": "^1.0.46",
-    "@types/jsonwebtoken": "^8.3.5",
     "@types/koa": "^2.11.0",
     "@types/koa-router": "^7.0.42",
-    "jsonwebtoken": "^8.5.1",
+    "@types/lru-cache": "^5.1.0",
+    "axios": "^0.19.0",
+    "jose": "^1.15.1",
     "koa": "^2.11.0",
-    "koa-router": "^7.4.0"
+    "koa-router": "^7.4.0",
+    "lru-cache": "^5.1.1"
   }
 }
