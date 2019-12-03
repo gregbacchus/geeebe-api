@@ -190,7 +190,7 @@ export class JwtJwksAuthentication extends BaseJwtAuthentication {
 
   protected async getSecretOrPublicKey(token: string): Promise<ConsumeKeyInput> {
     const { header, payload } = JWT.decode(token, { complete: true }) as { header: JwtHeader, payload: JwtPayload };
-    if (!payload.iss.startsWith('https://') || !header.kid) return null;
+    if (!payload.iss.startsWith('https://') || !header.kid) throw new Error("Token doesn't support JWKS");
 
     const keys = await this.getKeys(payload.iss);
 
