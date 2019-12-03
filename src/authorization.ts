@@ -132,12 +132,12 @@ abstract class BaseJwtAuthentication {
     } catch (err) {
       logger.error(err);
       switch (err.name) {
-        case 'JWTMalformed':
+        case 'JWTClaimInvalid':
           return {
             authorization: undefined,
             status: Statuses.FORBIDDEN,
           };
-        case 'JWTClaimInvalid':
+        case 'JWTMalformed':
         default:
           return {
             authorization: undefined,
