@@ -17,25 +17,25 @@
   "author": "Greg Bacchus",
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "^23.3.14",
-    "@types/node": "^10.14.21",
-    "jest": "^25.0.0",
-    "nodemon": "^1.19.3",
-    "supertest": "^3.2.0",
-    "ts-jest": "^23.10.5",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.20.0",
-    "typescript": "^3.6.4"
+    "@types/jest": "^24.0.23",
+    "@types/node": "^12.12.14",
+    "jest": "^24.9.0",
+    "nodemon": "^2.0.1",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.2.0",
+    "ts-node": "^8.5.4",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2"
   },
   "dependencies": {
-    "@geeebe/common": "^1.0.51",
-    "@geeebe/logging": "^1.0.16",
-    "@geeebe/service": "^1.0.29",
-    "@types/jsonwebtoken": "^7.2.8",
-    "@types/koa": "^2.0.46",
-    "@types/koa-router": "^7.0.31",
-    "jsonwebtoken": "^8.3.0",
-    "koa": "^2.5.2",
+    "@geeebe/common": "^1.0.62",
+    "@geeebe/logging": "^1.0.19",
+    "@geeebe/service": "^1.0.46",
+    "@types/jsonwebtoken": "^8.3.5",
+    "@types/koa": "^2.11.0",
+    "@types/koa-router": "^7.0.42",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.11.0",
     "koa-router": "^7.4.0"
   }
 }
