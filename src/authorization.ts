@@ -127,11 +127,12 @@ abstract class BaseJwtAuthentication {
     } catch (err) {
       logger.error(err);
       switch (err.name) {
-        case 'JsonWebTokenError':
+        case 'JWTMalformed':
           return {
             authorization: undefined,
             status: Statuses.FORBIDDEN,
           };
+        case 'JWTClaimInvalid':
         default:
           return {
             authorization: undefined,
@@ -194,7 +195,8 @@ export class JwtJwksAuthentication extends BaseJwtAuthentication {
     const keys = await this.getKeys(payload.iss);
 
     const matchedKey = keys.hasOwnProperty(header.kid) ? keys[header.kid] : null;
-    return matchedKey?.publicKey ?? null;
+    if (!matchedKey) throw new Error(`Unable to ind matching key for iss=${payload.iss} kid=${header.kid}`);
+    return matchedKey.publicKey;
   }
 
   private async getKeys(issuer: string): Promise<Keys> {
