@@ -3,7 +3,11 @@ import { WithSpan } from '@geeebe/service';
 
 import Router = require('koa-router');
 
-export type ApiContext = Router.RouterContext & WithLogger & WithSpan;
+interface WithRequestBody {
+  request: Request & { body: unknown };
+}
+
+export type ApiContext = Router.RouterContext & WithLogger & WithSpan & WithRequestBody;
 
 /**
  * Usage:
@@ -50,6 +54,7 @@ export abstract class ControllerApi<T> extends Api {
 
   protected withController = (endpoint: (controller: T, ctx: ApiContext) => Promise<void>) =>
     async (ctx: ApiContext): Promise<void> => {
+      console.log(ctx.request.body);
       const controller: T = this.createController(ctx);
       return endpoint(controller, ctx);
     }
