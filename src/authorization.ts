@@ -35,6 +35,7 @@ export interface VerifyOptions {
   nonce?: string;
   now?: Date;
   crit?: string[];
+  continueOnUnauthorized?: boolean;
 
   check?: CheckToken;
   cacheOptions?: LRU.Options<string, Keys>;
@@ -159,9 +160,9 @@ abstract class BaseJwtAuthentication {
       const { status, authorization } = await this.getAuthorization(ctx.request.headers, ctx.logger || debug);
       if (status) {
         ctx.status = status;
-        return;
+        if (!this.verifyOptions?.continueOnUnauthorized) return;
       }
-      if (this.verifyOptions && this.verifyOptions.check && !(await this.verifyOptions.check(authorization, ctx))) {
+      if (this.verifyOptions?.check && !(await this.verifyOptions.check(authorization, ctx))) {
         ctx.status = Statuses.FORBIDDEN;
         return;
       }
