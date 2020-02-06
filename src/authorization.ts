@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ConsumeKeyInput, JSONWebKeySet, JWKS, JWT } from 'jose';
 import { Context, Middleware } from 'koa';
 
+import Application = require('koa');
 import Router = require('koa-router');
 import LRU = require('lru-cache');
 
@@ -102,9 +103,8 @@ export class JwtDecoder {
 
   constructor() { }
 
-  public middleware(): Router.IMiddleware;
-  public middleware(): Middleware {
-    return async (ctx: AuthorizationContext, next): Promise<void> => {
+  public middleware(): Middleware & Router.IMiddleware {
+    return async (ctx: any, next: Application.Next): Promise<void> => {
       ctx.authorization = JwtDecoder.getAuthorization(ctx.request.headers);
       await next();
     };
@@ -154,9 +154,8 @@ abstract class BaseJwtAuthentication {
     }
   }
 
-  public middleware(): Router.IMiddleware;
-  public middleware(): Middleware {
-    return async (ctx: AuthorizationContext, next): Promise<void> => {
+  public middleware(): Middleware & Router.IMiddleware {
+    return async (ctx: any, next: Application.Next): Promise<void> => {
       const { status, authorization } = await this.getAuthorization(ctx.request.headers, ctx.logger || debug);
       if (status) {
         ctx.status = status;
