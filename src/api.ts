@@ -7,7 +7,8 @@ interface WithRequestBody {
   request: Request & { body: unknown };
 }
 
-export type ApiContext = Router.RouterContext<any, WithLogger & WithSpan & WithRequestBody>;
+type CustomT = WithLogger & WithSpan & WithRequestBody;
+export type ApiContext = Router.RouterContext<any, CustomT>;
 
 /**
  * Usage:
@@ -17,7 +18,7 @@ export type ApiContext = Router.RouterContext<any, WithLogger & WithSpan & WithR
  *     new FooApi('/foo'),
  *   );
  */
-export class ApiScope extends Router {
+export class ApiScope extends Router<any, CustomT> {
   constructor(path?: string, options?: Router.IRouterOptions) {
     super({ prefix: path, ...options });
   }
