@@ -7,7 +7,7 @@ interface WithRequestBody {
   request: Request & { body: unknown };
 }
 
-export type ApiContext = Router.RouterContext & WithLogger & WithSpan & WithRequestBody;
+export type ApiContext = Router.RouterContext<any, WithLogger & WithSpan & WithRequestBody>;
 
 /**
  * Usage:
