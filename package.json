@@ -1,6 +1,6 @@
 {
   "name": "@geeebe/api",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "description": "",
   "private": false,
   "main": "./dist/index.js",
