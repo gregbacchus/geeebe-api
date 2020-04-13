@@ -7,7 +7,8 @@ interface WithRequestBody {
   request: Request & { body: unknown };
 }
 
-export type ApiContext = Router.RouterContext & WithLogger & WithSpan & WithRequestBody;
+export type ExtraContext = WithLogger & WithSpan & WithRequestBody;
+export type ApiContext = Router.RouterContext<any, ExtraContext>;
 
 /**
  * Usage:
@@ -17,18 +18,18 @@ export type ApiContext = Router.RouterContext & WithLogger & WithSpan & WithRequ
  *     new FooApi('/foo'),
  *   );
  */
-export class ApiScope extends Router {
+export class ApiScope<StateT = any, CustomT = ExtraContext> extends Router<StateT, CustomT> {
   constructor(path?: string, options?: Router.IRouterOptions) {
     super({ prefix: path, ...options });
   }
 
-  public mount(parent: Router, ...children: Api[]) {
+  public mount(parent: Router<StateT, CustomT>, ...children: Array<Api<StateT, CustomT>>) {
     children.forEach((child) => child.mount(this));
     parent.use(this.routes(), this.allowedMethods());
   }
 }
 
-export abstract class Api extends Router {
+export abstract class Api<StateT = any, CustomT = ExtraContext> extends Router<StateT, CustomT> {
   /**
    * Create API
    * @param path - Path to mount this API inside the router
@@ -37,7 +38,7 @@ export abstract class Api extends Router {
     super({ prefix: path, ...options });
   }
 
-  public mount(parent: Router) {
+  public mount(parent: Router<StateT, CustomT>) {
     this.mountRoutes();
     parent.use(this.routes(), this.allowedMethods());
   }
@@ -49,7 +50,7 @@ export abstract class Api extends Router {
   protected abstract mountRoutes(): void;
 }
 
-export abstract class ControllerApi<T> extends Api {
+export abstract class ControllerApi<T, StateT = any, CustomT = ExtraContext> extends Api<StateT, CustomT> {
   protected abstract createController(ctx: ApiContext): T;
 
   protected withController = (endpoint: (controller: T, ctx: ApiContext) => Promise<void>) =>
