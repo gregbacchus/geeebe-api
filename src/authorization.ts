@@ -82,7 +82,7 @@ export namespace Jwt {
 export class JwtDecoder {
   constructor() { }
 
-  public middleware(): Middleware & Router.Middleware {
+  public middleware(): Middleware<any, AuthorizationContext> & Router.Middleware<any, AuthorizationContext> {
     return async (ctx: AuthorizationContext, next: Application.Next): Promise<void> => {
       const { headers } = ctx.request;
       ctx.authorization = JwtDecoder.getAuthorization(headers);
@@ -153,7 +153,7 @@ abstract class BaseJwtAuthentication {
     }
   }
 
-  public middleware(): Middleware & Router.Middleware {
+  public middleware(): Middleware<any, AuthorizationContext> & Router.Middleware<any, AuthorizationContext> {
     return async (ctx: AuthorizationContext, next: Application.Next): Promise<void> => {
       const { status, authorization } = await this.getAuthorization(ctx.request.headers, ctx.logger || debug);
       if (status) {
