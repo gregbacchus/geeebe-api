@@ -1,13 +1,17 @@
 import { WithLogger } from '@geeebe/logging';
-import { WithSpan } from '@geeebe/service';
-
-import Router = require('koa-router');
+import * as Router from '@koa/router';
 
 interface WithRequestBody {
   request: Request & { body: unknown };
 }
 
-export type ExtraContext = WithLogger & WithSpan & WithRequestBody;
+export type RequestHeaders = Record<string, string | string[] | undefined>;
+
+interface WithRequestHeaders {
+  request: Request & { headers: RequestHeaders };
+}
+
+export type ExtraContext = WithLogger & WithRequestBody & WithRequestHeaders;
 export type ApiContext = Router.RouterContext<any, ExtraContext>;
 
 /**
@@ -19,11 +23,11 @@ export type ApiContext = Router.RouterContext<any, ExtraContext>;
  *   );
  */
 export class ApiScope<StateT = any, CustomT = ExtraContext> extends Router<StateT, CustomT> {
-  constructor(path?: string, options?: Router.IRouterOptions) {
+  constructor(path?: string, options?: Router.RouterOptions) {
     super({ prefix: path, ...options });
   }
 
-  public mount(parent: Router<StateT, CustomT>, ...children: Array<Api<StateT, CustomT>>) {
+  public mount(parent: Router<StateT, CustomT>, ...children: Array<Api<StateT, CustomT>>): void {
     children.forEach((child) => child.mount(this));
     parent.use(this.routes(), this.allowedMethods());
   }
@@ -34,11 +38,11 @@ export abstract class Api<StateT = any, CustomT = ExtraContext> extends Router<S
    * Create API
    * @param path - Path to mount this API inside the router
    */
-  constructor(path?: string, options?: Router.IRouterOptions) {
+  constructor(path?: string, options?: Router.RouterOptions) {
     super({ prefix: path, ...options });
   }
 
-  public mount(parent: Router<StateT, CustomT>) {
+  public mount(parent: Router<StateT, CustomT>): void {
     this.mountRoutes();
     parent.use(this.routes(), this.allowedMethods());
   }

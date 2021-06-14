@@ -1,12 +1,29 @@
 {
-  "eslint.enable": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.organizeImports": true
+  },
   "editor.formatOnSave": true,
-  "files.trimTrailingWhitespace": true,
+  "editor.tabSize": 2,
+  "eslint.codeAction.disableRuleComment": {
+    "enable": true,
+    "location": "separateLine"
+  },
+  "eslint.enable": true,
+  "files.exclude": {
+    "**/*.js": {
+      "when": "$(basename).ts"
+    },
+    "**/*.js.map": true,
+    "**/*.vscode": true,
+    "**/.DS_Store": true,
+    "**/.git/": true,
+    "**/.idea/": true,
+    "**/node_modules/": true
+  },
   "files.insertFinalNewline": true,
-  "tslint.autoFixOnSave": true,
-  "cSpell.words": [
-    "JWKS",
-    "geeebe",
-    "openid"
-  ]
+  "files.trimTrailingWhitespace": true,
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "typescript.preferences.quoteStyle": "single",
 }

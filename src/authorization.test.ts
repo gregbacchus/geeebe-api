@@ -1,22 +1,23 @@
 import { Statuses } from '@geeebe/common';
-import Koa = require('koa');
+import { JWTPayload } from 'jose/webcrypto/types';
 import { Server } from 'net';
-import { JwtAuthentication, JwtDecoder } from '../src/authorization';
-
-const request = require('supertest');
+import { AuthorizationContext, JwtAuthentication, JwtDecoder } from './authorization';
+import Koa = require('koa');
+import request = require('supertest');
 
 describe('JwtAuthentication', () => {
   describe('middleware()', () => {
-    const decoder = new JwtAuthentication('dont-tell', {
-      algorithms: ['HS256'],
-      check: async (auth, _) => auth.sub === '1234567890',
+    const decoder = new JwtAuthentication('dont-tell-dont-tell-dont-tell-anyone', {
+      verifyOptions: { algorithms: ['HS256'] },
+      check: (auth, _) => Promise.resolve(auth?.sub === '1234567890'),
     });
     const app = new Koa();
     app.use(decoder.middleware());
-    app.use(async (ctx: any) => {
+    app.use((ctx: AuthorizationContext) => {
       // return decoded authorization as body so that the tests can check it
-      ctx.body = ctx.authorization;
+      ctx.body = { authorization: ctx.authorization };
       ctx.status = 200;
+      return Promise.resolve();
     });
 
     let server: Server;
@@ -57,11 +58,11 @@ describe('JwtAuthentication', () => {
     });
 
     it('must set authorization on context if valid token', async () => {
-      const response: any = await request(server)
+      const response = await request(server)
         .post('/')
-        .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.pcYEvbkYGVHXs0p6xmsmCfRGnZRApzlZcdoi2d1XhXg')
+        .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.XJFQwsk7KL2yjWHl55Q0KW1w0IgV6UjhyUUw_pERYOI')
         .expect(Statuses.OK);
-      const authorization = response.body;
+      const { authorization } = response.body as { authorization: JWTPayload };
       expect(authorization).toBeDefined();
       expect(authorization.sub).toBe('1234567890');
       expect(authorization.name).toBe('John Doe');
@@ -82,10 +83,11 @@ describe('JwtDecoder', () => {
     const decoder = new JwtDecoder();
     const app = new Koa();
     app.use(decoder.middleware());
-    app.use(async (ctx: any) => {
+    app.use((ctx: AuthorizationContext) => {
       // return decoded authorization as body so that the tests can check it
-      ctx.body = ctx.authorization;
+      ctx.body = { authorization: ctx.authorization };
       ctx.status = 200;
+      return Promise.resolve();
     });
 
     let server: Server;
@@ -99,30 +101,33 @@ describe('JwtDecoder', () => {
     });
 
     it('must ignore no Authorization header', async () => {
-      const response: any = await request(server)
+      const response = await request(server)
         .post('/');
-      expect(response.authorization).toBeUndefined();
+      const { authorization } = response.body as { authorization: JWTPayload };
+      expect(authorization).toBeUndefined();
     });
 
     it('must ignore malformed Authorization header', async () => {
-      const response: any = await request(server)
+      const response = await request(server)
         .post('/')
         .set('Authorization', 'TEST');
-      expect(response.authorization).toBeUndefined();
+      const { authorization } = response.body as { authorization: JWTPayload };
+      expect(authorization).toBeUndefined();
     });
 
     it('must ignore malformed Authorization header Bearer token', async () => {
-      const response: any = await request(server)
+      const response = await request(server)
         .post('/')
         .set('Authorization', 'Bearer TOKEN');
-      expect(response.authorization).toBeUndefined();
+      const { authorization } = response.body as { authorization: JWTPayload };
+      expect(authorization).toBeUndefined();
     });
 
     it('must set authorization on context if valid token', async () => {
-      const response: any = await request(server)
+      const response = await request(server)
         .post('/')
         .set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.XbPfbIHMI6arZ3Y922BhjWgQzWXcXNrz0ogtVhfEd2o');
-      const authorization = response.body;
+      const { authorization } = response.body as { authorization: JWTPayload };
       expect(authorization).toBeDefined();
       expect(authorization.sub).toBe('1234567890');
       expect(authorization.name).toBe('John Doe');
