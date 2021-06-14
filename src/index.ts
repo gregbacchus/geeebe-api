@@ -1,4 +1,5 @@
 export * from './api';
+export * from './api-service';
 export * from './authorization';
 export * from './error';
 export * from './helmet';
