@@ -8,14 +8,14 @@ import { onError } from './error';
 import { errorMiddleware, livenessEndpoint, readinessEndpoint } from './middleware';
 import { prometheusMetricsEndpoint } from './prometheus';
 
-export interface MonitorServiceOptions {
+export interface MonitoringServiceOptions {
   isAlive?: () => Promise<boolean>;
   isReady?: () => Promise<boolean>;
   logger?: Logger;
   port: number | string; // server port
 }
 
-export class MonitorService<TOptions extends MonitorServiceOptions = MonitorServiceOptions> extends Koa implements Service {
+export class MonitoringService<TOptions extends MonitoringServiceOptions = MonitoringServiceOptions> extends Koa implements Service {
   protected readonly logger: Logger;
 
   private server: Server | undefined;
@@ -77,4 +77,18 @@ export class MonitorService<TOptions extends MonitorServiceOptions = MonitorServ
       });
     });
   }
+}
+
+export namespace MonitoringService {
+  export const create = (port: number | string, isReady: () => Promise<boolean>, isAlive?: () => Promise<boolean>): Service => {
+    return new MonitoringService({
+      isReady: (): Promise<boolean> => isReady(),
+      isAlive: async (): Promise<boolean> => {
+        const alive = await isAlive?.();
+        const ready = await isReady();
+        return (alive ?? true) && ready;
+      },
+      port,
+    });
+  };
 }
