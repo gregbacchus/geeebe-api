@@ -1,6 +1,6 @@
 {
   "name": "@geeebe/api",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "private": false,
   "description": "Koa api helpers",
   "repository": {
