@@ -100,7 +100,7 @@ export abstract class KoaService<TOptions extends ServiceOptions = ServiceOption
    * Start the app
    */
   public start(): Promise<void> {
-    const router = new Router();
+    const router = new Router<StateT, CustomT>();
     this.mountApi(router);
 
     this.use(router.routes());
@@ -150,5 +150,5 @@ export abstract class KoaService<TOptions extends ServiceOptions = ServiceOption
   /**
    * Override to mount API routes
    */
-  protected abstract mountApi(router: Router): void;
+  protected abstract mountApi(router: Router<StateT, CustomT>): void;
 }
