@@ -19,9 +19,9 @@
     "test": "./node_modules/.bin/jest --verbose --coverage --runInBand --passWithNoTests"
   },
   "dependencies": {
-    "@geeebe/common": "^1.0.77",
+    "@geeebe/common": "^1.0.79",
     "@geeebe/logging": "^1.0.26",
-    "@geeebe/service": "^2.0.4",
+    "@geeebe/service": "^2.0.6",
     "@koa/router": "^10.0.0",
     "@types/koa": "^2.13.3",
     "@types/koa-bodyparser": "^4.3.1",

@@ -51,6 +51,8 @@ export abstract class KoaService<TOptions extends ServiceOptions = ServiceOption
 
   private server: Server | undefined;
 
+  private alive = true;
+
   /**
    * Create Koa app
    * @param options
@@ -85,6 +87,16 @@ export abstract class KoaService<TOptions extends ServiceOptions = ServiceOption
   }
 
   /**
+   * Return true if this service is alive
+   */
+  public isAlive(): Promise<boolean> { return Promise.resolve(this.alive); }
+
+  /**
+    * Return true if this service is ready for operation
+    */
+  public isReady(): Promise<boolean> { return Promise.resolve(!!this.server); }
+
+  /**
    * Start the app
    */
   public start(): Promise<void> {
@@ -117,6 +129,7 @@ export abstract class KoaService<TOptions extends ServiceOptions = ServiceOption
   }
 
   public dispose(): Promise<void> {
+    this.alive = false;
     return Promise.resolve();
   }
 

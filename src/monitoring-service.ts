@@ -20,6 +20,8 @@ export class MonitoringService<TOptions extends MonitoringServiceOptions = Monit
 
   private server: Server | undefined;
 
+  private alive = true;
+
   /**
    * Create Koa app
    * @param options
@@ -32,6 +34,10 @@ export class MonitoringService<TOptions extends MonitoringServiceOptions = Monit
 
     this.on('error', onError(this.options.port, this.logger));
   }
+
+  public isAlive(): Promise<boolean> { return Promise.resolve(this.alive); }
+
+  public isReady(): Promise<boolean> { return Promise.resolve(!!this.server); }
 
   public start(): Promise<void> {
     if (this.server) throw new Error('Already started');
@@ -62,6 +68,7 @@ export class MonitoringService<TOptions extends MonitoringServiceOptions = Monit
   }
 
   public dispose(): Promise<void> {
+    this.alive = false;
     return new Promise<void>((resolve, reject) => {
       if (!this.server) {
         resolve();
