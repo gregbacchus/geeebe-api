@@ -17,6 +17,7 @@ export interface MonitorRequest {
   duration: number;
   method: string;
   path: string;
+  route?: string;
   status: number;
 }
 
@@ -61,6 +62,14 @@ export const ignorePaths = (paths: string[], middleware: Middleware): Middleware
   };
 };
 
+interface MaybeWithRouterPath {
+  routerPath?: string;
+}
+
+const getRoute = (ctx: MaybeWithRouterPath): string | undefined => {
+  return ('routerPath' in ctx) && (typeof ctx.routerPath === 'string') ? ctx.routerPath : undefined;
+};
+
 /**
  * Adds headers for additional security
  */
@@ -103,12 +112,14 @@ export const readinessEndpoint = (isReady?: () => Promise<boolean>) => async (ct
 export const observeMiddleware = (logger: Logger, options: ObserveMiddlewareOptions): Middleware => {
   const middleware = async (ctx: ServiceContext, next: () => Promise<unknown>): Promise<void> => {
     const started = process.hrtime();
+    const route = getRoute(ctx as MaybeWithRouterPath);
 
     ctx.logger = logger.child({
       host: ctx.host,
       ip: ctx.ip,
       method: ctx.method,
       path: ctx.request.url,
+      route,
     });
 
     if (options.useLogger !== false && !options.loggerIgnorePath?.test(ctx.request.url)) {
@@ -121,6 +132,7 @@ export const observeMiddleware = (logger: Logger, options: ObserveMiddlewareOpti
     try {
       responseSummary.observe({
         method: ctx.method,
+        route,
         status: String(ctx.status),
       }, HrTime.toSeconds(duration));
 
@@ -128,6 +140,7 @@ export const observeMiddleware = (logger: Logger, options: ObserveMiddlewareOpti
         duration: durationMs,
         method: ctx.method,
         path: ctx.path,
+        route,
         status: ctx.status,
       });
       if (options.useLogger !== false && !options.loggerIgnorePath?.test(ctx.request.url)) {
