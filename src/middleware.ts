@@ -63,11 +63,11 @@ export const ignorePaths = (paths: string[], middleware: Middleware): Middleware
 };
 
 interface MaybeWithRouterPath {
-  routerPath?: string;
+  _matchedRoute: string | RegExp | undefined;
 }
 
 const getRoute = (ctx: MaybeWithRouterPath): string | undefined => {
-  return ('routerPath' in ctx) && (typeof ctx.routerPath === 'string') ? ctx.routerPath : undefined;
+  return ('_matchedRoute' in ctx) ? (typeof ctx._matchedRoute === 'object') ? ctx._matchedRoute.toString() : ctx._matchedRoute : undefined;
 };
 
 /**
