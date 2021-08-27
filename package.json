@@ -10,7 +10,7 @@
   "license": "ISC",
   "author": "Greg Bacchus",
   "main": "./dist/index.js",
-  "types": "./src/index.ts",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "rm -rf dist && ./node_modules/.bin/tsc --outDir dist --sourceMap",
     "lint": "./node_modules/.bin/eslint src/ --ext .ts,.tsx",
