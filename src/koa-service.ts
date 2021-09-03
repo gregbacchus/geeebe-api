@@ -38,6 +38,7 @@ export interface ServiceOptions {
   monitor?: Monitor;
   observe?: boolean;
   port: number | string; // server port
+  proxy?: boolean;
   serviceName?: string; // name of service, used for tracing
   staticPath?: string; // directory from which to serve static files
   useLogger?: boolean; // include koa logger
@@ -65,6 +66,7 @@ export abstract class KoaService<TOptions extends ServiceOptions = ServiceOption
       ...options,
     };
     this.logger = this.options.logger || logger;
+    this.proxy = this.options.proxy ?? false;
 
     if (this.options.observe) {
       this.use(observeMiddleware(this.logger, this.options));
