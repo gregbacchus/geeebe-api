@@ -46,6 +46,11 @@ export const formatError = (ctx: Context & Partial<WithLogger>, err: unknown): v
       ctx.set('Pragma', 'no-cache');
       ctx.status = getErrorStatus(err) ?? Statuses.UNAUTHORIZED;
       break;
+    case 'ForbiddenError':
+      ctx.set('Cache-Control', 'max-age=0');
+      ctx.set('Pragma', 'no-cache');
+      ctx.status = getErrorStatus(err) ?? Statuses.FORBIDDEN;
+      break;
     default:
       log(`${ctx.request.method} ${ctx.request.url}`, { error: err });
       ctx.set('Cache-Control', 'max-age=0');
@@ -81,3 +86,23 @@ export const onError = (port: number | string, log: Logger) => (error: Error): v
       throw error;
   }
 };
+
+export class UnauthorizedError extends Error {
+  constructor(public readonly status?: number) {
+    super('Unauthorized');
+
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, UnauthorizedError.prototype);
+    this.name = 'UnauthorizedError';
+  }
+}
+
+export class ForbiddenError extends Error {
+  constructor(public readonly status?: number) {
+    super('Forbidden');
+
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, ForbiddenError.prototype);
+    this.name = 'ForbiddenError';
+  }
+}
